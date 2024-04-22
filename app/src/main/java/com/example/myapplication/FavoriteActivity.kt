@@ -11,9 +11,11 @@ import com.example.myapplication.databinding.ActivityFavoriteBinding
 import com.squareup.picasso.Picasso
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import okhttp3.internal.notify
 
 class FavoriteActivity : AppCompatActivity() {
     lateinit var binding: ActivityFavoriteBinding
+    var listOfFavoriteFilms = listOf<Film>()
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityFavoriteBinding.inflate(layoutInflater)
@@ -23,19 +25,23 @@ class FavoriteActivity : AppCompatActivity() {
             val intent = Intent(this@FavoriteActivity, MainActivity::class.java)
             startActivity(intent)
         }
+        binding.ibSearch.setOnClickListener {
+            val intent = Intent(this@FavoriteActivity, SearchActivity::class.java)
+            intent.putExtra("FromActivity", "FavoriteActivity")
+            startActivity(intent)
+        }
     }
     override fun onStart() {
         super.onStart()
-        var favoriteList: ArrayList<Int>? = this.intent.getIntegerArrayListExtra("filmId")
-        Log.d("MyLOG", favoriteList.toString())
 
         val adapter = FilmAdapter({
             val intent = Intent(this@FavoriteActivity, FilmDescriptionActivity::class.java)
             intent.putExtra("filmId", it.filmId)
             startActivity(intent)},{
-            favoriteList?.remove(it.filmId)
-        })
-
+                FavoriteListManager.removeFilmFromFavorites(it.filmId)
+        },
+            true)
+        update(adapter)
         lifecycle.coroutineScope.launch {
             when (val films = NetworkService.getFilms().getOrNull()) {
                 null -> {
@@ -44,21 +50,19 @@ class FavoriteActivity : AppCompatActivity() {
                     startActivity(intent)
                 }
                 else -> {
-                    val favoriteFilmsList = mutableListOf<Film>()
-                    for (film in films) {
-                        if (film.filmId in favoriteList ?: emptyList()) {
-                            favoriteFilmsList.add(film)
-                        }
-                    }
-                    adapter.submitList(favoriteFilmsList)
+                    Log.d("MyLogLaunch", listOfFavoriteFilms.toString())
+                    listOfFavoriteFilms = films
+                    Log.d("MyLogFilterLog", listOfFavoriteFilms.toString())
+                    update(adapter)
                 }
             }
         }
+    }
+    fun update(adapter : FilmAdapter){
+        adapter.submitList(listOfFavoriteFilms.filter { it.filmId in FavoriteListManager.getFavoriteList() ?: emptyList() })
         binding.apply {
             rcView.layoutManager = LinearLayoutManager(this@FavoriteActivity)
             rcView.adapter = adapter
         }
-
-
     }
 }

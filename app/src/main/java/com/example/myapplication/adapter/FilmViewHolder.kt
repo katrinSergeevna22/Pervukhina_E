@@ -1,7 +1,9 @@
 package com.example.myapplication.adapter
 
 import android.util.Log
+import android.view.View
 import androidx.recyclerview.widget.RecyclerView
+import com.example.myapplication.FavoriteListManager
 import com.example.myapplication.Film
 import com.example.myapplication.R
 import com.example.myapplication.databinding.FilmItemBinding
@@ -19,7 +21,9 @@ class FilmViewHolder(
 
     fun onBind(data: Film) {
         _film = data
+        updateRaitingVisibility()
         with(binding) {
+
             root.setOnClickListener {
                 Log.d("My log: click", film.filmId.toString())
                 onInfoClicked(film)
@@ -28,8 +32,11 @@ class FilmViewHolder(
             root.setOnLongClickListener{
                 Log.d("My log: long click", film.filmId.toString())
                 onLongClicked(film)
-                false
+                updateRaitingVisibility()
+
+                true
             }
+
 
             tvTitle.text = film.nameRu
             tvTitleGenre.text = parseGenres(film.genres.toString()).capitalize() + " (" + film.year + ")"
@@ -38,6 +45,13 @@ class FilmViewHolder(
             Picasso.with(root.context)
                 .load(film.posterUrl)
                 .into(ivPoster)
+        }
+    }
+    private fun updateRaitingVisibility() {
+        if (FavoriteListManager.getFavoriteList().contains(film.filmId)) {
+            binding.ivRaiting.visibility = View.VISIBLE
+        } else {
+            binding.ivRaiting.visibility = View.INVISIBLE
         }
     }
     fun parseGenres(input: String): String {

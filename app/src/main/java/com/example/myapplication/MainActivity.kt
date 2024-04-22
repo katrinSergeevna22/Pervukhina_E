@@ -2,36 +2,35 @@ package com.example.myapplication
 
 import android.content.Intent
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.coroutineScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.myapplication.adapter.FilmAdapter
+import com.example.myapplication.adapter.FilmViewHolder
 import com.example.myapplication.databinding.ActivityMainBinding
 import kotlinx.coroutines.launch
 
 
 class MainActivity : AppCompatActivity() {
     private lateinit var binding: ActivityMainBinding
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
+        //favoriteList = intent.getIntegerArrayListExtra("favoriteFilms") ?: ArrayList<Int>()
         setContentView(binding.root)
     }
 
     override fun onStart() {
         super.onStart()
-        var favoriteList = ArrayList<Int>()
         val bundle = Bundle()
         val adapter = FilmAdapter({
             val intent = Intent(this@MainActivity, FilmDescriptionActivity::class.java)
             intent.putExtra("filmId", it.filmId)
             startActivity(intent)},{
-            val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
-            intent.putExtra("filmId", it.filmId)
-            favoriteList.add(it.filmId)
-        }
-
+            FavoriteListManager.addFilmToFavorites(it.filmId)
+        },
+            false
         )
         lifecycle.coroutineScope.launch {
             when (val films = NetworkService.getFilms().getOrNull()) {
@@ -49,17 +48,14 @@ class MainActivity : AppCompatActivity() {
         }
         binding.ibSearch.setOnClickListener {
             val intent = Intent(this@MainActivity, SearchActivity::class.java)
+            intent.putExtra("FromActivity", "MainActivity")
             startActivity(intent)
         }
         binding.bnFavorite.setOnClickListener {
-
             val intent = Intent(this@MainActivity, FavoriteActivity::class.java)
-            intent.putExtra("", favoriteList)
-            bundle.putIntegerArrayList("films", favoriteList)
-            intent.putExtras(bundle)
+            //intent.putExtras(bundle)
             startActivity(intent)
         }
-
 
     }
 
