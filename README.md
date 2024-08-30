@@ -1,7 +1,7 @@
-Android-приложение "Онлайн кинотеатр"
+# Android application "Online cinema"
 
-Приложение отображает популярные фильмы, идущие в кинотеатрах.
+The application displays popular movies running in cinemas.
 
-После входа в приложение и его загрузки пользователь попадает на главный экран, где видит список популярных фильмов (если возникнет ошибка подключения к интернету пользователь увидит соответствующую запись). Кликнув на фильм, пользователь видит подробную информацию о фильме. При долгом нажатии на фильм напротив появиться звездочка, означающая, что фильм добавлен в избранное.
+After logging into the application and downloading it, the user gets to the main screen, where he sees a list of popular movies (if there is an error connecting to the Internet, the user will see the corresponding entry). By clicking on the movie, the user sees detailed information about the movie. If you long-click on the movie, an asterisk will appear opposite, meaning that the movie has been added to favorites.
 
-Пользователь может перейти к избранным фильмам, нажав на кнопку избранное. Также пользователь может перейти в поиск и ввести название или его часть для поиска нужного фильма и нажать кнопку поиск, отобразившийся фильм пользователь может добавить избранное.
+The user can go to their favorite movies by clicking on the favorites button. Also, the user can go to the search and enter the title or part of it to search for the desired movie and click the search button, the user can add favorites to the displayed movie.
